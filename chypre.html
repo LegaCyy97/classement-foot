@@ -14,7 +14,12 @@
             background-color: #000; 
             font-family: 'VarsityTeam', sans-serif; 
             color: white; 
-            margin: 20px;
+            margin: 0; /* On supprime les marges extérieures */
+            padding: 0; /* On supprime les marges intérieures */
+            min-height: 100vh; /* On force le fond noir à aller tout en bas */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* On centre tout parfaitement */
         }
         
         .classement-container { width: 800px; display: flex; flex-direction: column; gap: 0px; }
@@ -127,5 +132,6 @@ renderClassement();
 </script>
 </body>
 </html>
+
 
 
