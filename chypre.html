@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         @font-face {
             font-family: 'VarsityTeam';
@@ -124,6 +125,35 @@ function renderClassement() {
 
 renderClassement();
 </script>
+<script>
+// --- SCRIPT D'ADAPTATION MOBILE ---
+function adapterEcran() {
+    const conteneur = document.getElementById('classement');
+    const largeurEcran = window.innerWidth; // La largeur du téléphone
+    const largeurTableau = 800; // La largeur de ton design
 
+    // Si l'écran est plus petit que le tableau (donc sur mobile)
+    if (largeurEcran < largeurTableau) {
+        const echelle = (largeurEcran / largeurTableau) * 0.95; // On réduit à 95% de l'écran pour laisser une marge
+        
+        // On applique le zoom
+        conteneur.style.transform = `scale(${echelle})`;
+        conteneur.style.transformOrigin = 'top left'; // On zoome depuis le coin haut gauche
+        
+        // On ajuste la hauteur de la page pour éviter le grand vide en bas
+        document.body.style.height = (conteneur.offsetHeight * echelle + 100) + 'px';
+        document.body.style.overflowX = 'hidden'; // On empêche le scroll horizontal moche
+    } else {
+        // Sur PC, on remet normal
+        conteneur.style.transform = 'scale(1)';
+        document.body.style.height = 'auto';
+    }
+}
+
+// On lance l'adaptation au chargement et si on tourne l'écran
+window.addEventListener('load', adapterEcran);
+window.addEventListener('resize', adapterEcran);
+</script>
 </body>
 </html>
+
