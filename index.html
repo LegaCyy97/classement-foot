@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon App Foot</title>
+    <style>
+        @font-face { font-family: 'VarsityTeam'; src: url('varsity-team.bold.otf'); }
+        body { background-color: #000; color: white; font-family: 'VarsityTeam', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        
+        h1 { font-size: 50px; text-transform: uppercase; margin-bottom: 40px; color: #00A8B5; border-bottom: 3px solid white; }
+        
+        .menu-btn {
+            display: flex; align-items: center; justify-content: flex-start;
+            width: 300px; height: 80px;
+            margin: 10px; background: #222; border: 2px solid white;
+            text-decoration: none; color: white; font-size: 30px;
+            transition: 0.2s;
+        }
+        .menu-btn:hover { background: #00A8B5; transform: scale(1.05); }
+        
+        .flag { width: 80px; height: 100%; object-fit: cover; border-right: 2px solid white; margin-right: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>MENU SCORES</h1>
+
+    <a href="grece.html" class="menu-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Greece.svg/320px-Flag_of_Greece.svg.png" class="flag">
+        GRÈCE
+    </a>
+
+    <a href="chypre.html" class="menu-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Cyprus.svg/320px-Flag_of_Cyprus.svg.png" class="flag">
+        CHYPRE
+    </a>
+
+</body>
+</html>
