@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=800, user-scalable=yes">
+    <title>SCORES GRÈCE | Saison 25-26</title>
     <style>
         @font-face {
             font-family: 'VarsityTeam';
@@ -115,40 +116,45 @@
 
 <div class="header-pays">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Greece.svg/320px-Flag_of_Greece.svg.png">
-    <h1>GRÈCE</h1>
+    <h1>D1 GRÈCE</h1>
 </div>
 
 <div id="classement" class="classement-container"></div>
 
 <script>
-// --- DONNÉES GRÈCE (Tes noms et logos) ---
-const equipes = [
-    { name: "AEK Athènes", played: 18, gd: 20, points: 44, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/0/04/AEK_Athens_FC_logo.svg/800px-AEK_Athens_FC_logo.svg.png" },
-    { name: "OLYMPIACOS", played: 17, gd: 26, points: 42, logo: "https://upload.wikimedia.org/wikipedia/it/5/56/Olympiakos_600.png" },
-    { name: "PAOK Salonique", played: 17, gd: 25, points: 41, logo: "https://upload.wikimedia.org/wikipedia/en/e/e6/PAOK_FC_EMBLEM.png" },
-    { name: "LEVADIAKOS", played: 18, gd: 23, points: 35, logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/APO_Levadiakos_%28logo%29.svg/800px-APO_Levadiakos_%28logo%29.svg.png" },
-    { name: "PANATHINAIKOS", played: 17, gd: 3, points: 26, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/84/Panathinaikos_F.C._logo.svg/800px-Panathinaikos_F.C._logo.svg.png" },
-    { name: "VOLOS", played: 18, gd: -6, points: 25, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/7/70/Volos_F.C._logo.png/800px-Volos_F.C._logo.png" },
-    { name: "ARIS Salonique", played: 18, gd: -4, points: 22, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/e/e4/Aris_Thessaloniki_F.C._logo.svg/800px-Aris_Thessaloniki_F.C._logo.svg.png" },
-    { name: "KIFISIA", played: 17, gd: -2, points: 19, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/d/d9/A.E._Kifisia_new_official_logo.webp/800px-A.E._Kifisia_new_official_logo.webp.png" },
-    { name: "OFI Crète", played: 17, gd: -10, points: 18, logo: "https://upload.wikimedia.org/wikipedia/el/e/e9/OFI_FC_Logo_2020.png" },
-    { name: "ATROMITOS", played: 18, gd: -5, points: 17, logo: "https://upload.wikimedia.org/wikipedia/en/e/e9/Atromitos.png" },
-    { name: "AEL LARISSA", played: 18, gd: -12, points: 16, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/2/25/Athlitiki_Enosi_Larissa_F.C._logo.svg/800px-Athlitiki_Enosi_Larissa_F.C._logo.svg.png" },
-    { name: "PANETOLIKOS", played: 18, gd: -16, points: 15, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Panetolikos_new_emblem.png/800px-Panetolikos_new_emblem.png" },
-    { name: "ASTERAS TRIPOLIS", played: 17, gd: -9, points: 13, logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/2/26/Logo_Asteras_Tripolis_2024.svg/1280px-Logo_Asteras_Tripolis_2024.svg.png?20250825033652" },
-    { name: "PANSERRAIKOS", played: 18, gd: -33, points: 8, logo: "https://upload.wikimedia.org/wikipedia/en/b/b0/Panseraikos_new_emblem.png" }
-];
+// --- CONFIGURATION ---
+const googleSheetId = "1lyuhhsvXqX2m8GavZdviM01RTR_1jk4jHREHp_ihRs8"; // Ton ID
+const ongletNom = "grece"; // Ton onglet
 
-function renderClassement() {
-    // Tri manuel par points
-    equipes.sort((a, b) => {
-        if (b.points !== a.points) {
-            return b.points - a.points; 
-        } else {
-            return 0; // Si égalité, on garde ton ordre manuel
-        }
-    });
+const url = `https://opensheet.elk.sh/${googleSheetId}/${ongletNom}`;
 
+async function chargerClassement() {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur réseau");
+        const data = await response.json();
+
+        // Une fois les données reçues, on les trie par points
+        data.sort((a, b) => {
+            // Conversion en nombre pour être sûr
+            const pointsA = parseInt(a.points) || 0;
+            const pointsB = parseInt(b.points) || 0;
+
+            if (pointsB !== pointsA) {
+                return pointsB - pointsA;
+            } else {
+                return 0; // Si égalité, garde l'ordre du fichier Excel
+            }
+        });
+
+        renderClassement(data);
+    } catch (error) {
+        console.error("Erreur de chargement :", error);
+        document.getElementById('classement').innerHTML = "<div style='text-align:center; margin-top:20px; font-size:24px;'>Erreur : Vérifie que le Google Sheet est bien en 'Public'</div>";
+    }
+}
+
+function renderClassement(equipes) {
     const container = document.getElementById('classement');
     container.innerHTML = ''; 
 
@@ -158,17 +164,17 @@ function renderClassement() {
 
         // --- RÈGLES COULEURS GRÈCE ---
         if (rang <= 4) {
-            specialClass = 'top-tier'; // 1-4 : Turquoise
+            specialClass = 'top-tier';
         } else if (rang <= 8) {
-            specialClass = 'mid-tier'; // 5-8 : Vert Foncé
+            specialClass = 'mid-tier';
         } else {
-            specialClass = 'bottom-tier'; // 9-14 : Rouge
+            specialClass = 'bottom-tier';
         }
 
         container.innerHTML += `
             <div class="ligne ${specialClass}">
                 <div class="numero">${rang}</div>
-                <div class="logo-box"><img src="${team.logo}"></div>
+                <div class="logo-box"><img src="${team.logo}" onerror="this.src='https://via.placeholder.com/50'"></div>
                 <div class="nom-club">${team.name}</div>
                 <div class="stats">
                     <span>${team.played}</span>
@@ -180,7 +186,14 @@ function renderClassement() {
     });
 }
 
+// On lance le chargement
+chargerClassement();
+</script>
+</body>
+</html>
+
 renderClassement();
 </script>
 </body>
 </html>
+
