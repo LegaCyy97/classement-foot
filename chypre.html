@@ -2,8 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-        <meta name="viewport" content="width=800, user-scalable=yes">
-    <style>
+    <meta name="viewport" content="width=800, user-scalable=yes">    
+        <style>
         @font-face {
             font-family: 'VarsityTeam';
             src: url('varsity-team.bold.otf') format('opentype');
@@ -20,7 +20,30 @@
             display: flex;
             flex-direction: column;
             align-items: center; /* On centre tout parfaitement */
+	    justify-content: flex-start;
         }
+	
+	/* Style du Titre Pays */
+.header-pays {
+    display: flex;
+    align-items: center;     /* Aligne verticalement */
+    justify-content: center; /* Centre horizontalement */
+    gap: 30px;               /* Espace entre le drapeau et le texte */
+    margin-top: 30px;        /* Espace au-dessus */
+    margin-bottom: 30px;     /* Espace avant le tableau */
+}
+
+.header-pays img {
+    width: 120px;            /* Taille du drapeau */
+    height: auto;
+    }
+
+.header-pays h1 {
+    font-size: 90px;         /* Gros titre Varsity */
+    margin: 0;
+    color: white;            /* Blanc (ou #12C4C2 pour le turquoise) */
+    text-shadow: 4px 4px 0 #000; /* Petit effet d'ombre pour le relief */
+}
         
         .classement-container { width: 800px; display: flex; flex-direction: column; gap: 0px; margin-bottom: 0;}
 
@@ -72,8 +95,11 @@
     </style>
 </head>
 <body>
-
-<div id="classement" class="classement-container"></div>
+<body>
+    <div class="header-pays">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Cyprus.svg/320px-Flag_of_Cyprus.svg.png">
+        <h1>CHYPRE</h1>
+    </div> <div id="classement" class="classement-container"></div>
 
 <script>
 // MODIFIE LES CHIFFRES ICI - LE TRI SE FAIT TOUT SEUL
@@ -132,6 +158,7 @@ renderClassement();
 </script>
 </body>
 </html>
+
 
 
 
