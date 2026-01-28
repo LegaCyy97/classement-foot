@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=800, user-scalable=yes">
+    <style>
+        @font-face {
+            font-family: 'VarsityTeam';
+            src: url('varsity-team.bold.otf') format('opentype');
+            font-weight: bold;
+        }
+
+        body { 
+            background-color: #000; 
+            font-family: 'VarsityTeam', sans-serif; 
+            color: white; 
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* Style du Titre Pays */
+        .header-pays {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            width: 800px;
+            max-width: 100%;
+        }
+
+        .header-pays img {
+            width: 120px;
+            height: auto;
+            border: 3px solid white;
+        }
+
+        .header-pays h1 {
+            font-size: 90px;
+            margin: 0;
+            color: white;
+            text-shadow: 4px 4px 0 #000;
+        }
+        
+        .classement-container { width: 800px; display: flex; flex-direction: column; gap: 0px; margin-bottom: 50px;}
+
+        .ligne {
+            display: flex; align-items: center;
+            background-color: #1B8F38; 
+            height: 70px; 
+            border: 1px solid white;
+            margin-bottom: -1px;
+        }
+
+        /* --- COULEURS DU TABLEAU --- */
+        .top-tier { background-color: #12C4C2 !important; } /* 1-4 : Turquoise */
+        .mid-tier { background-color: #006400 !important; } /* 5-8 : Vert Foncé (Conférence) */
+        .bottom-tier { background-color: #C11B17 !important; } /* 9-14 : Rouge (Relégation) */
+
+        .numero {
+            width: 70px; text-align: center; font-size: 36px;
+            height: 100%; display: flex; 
+            align-items: center; justify-content: center;
+            border-right: 2px solid white;
+        }
+
+        .logo-box {
+            width: 70px; height: 100%;
+            background: #000;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border-right: 2px solid white;
+        }
+
+        .logo-box img {
+            width: 150%;
+            transform: rotate(15deg);
+            object-fit: contain;
+        }
+
+        .nom-club { 
+            flex-grow: 1; padding-left: 8px; 
+            font-size: 34px; 
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .stats {
+            display: flex; width: 220px; 
+            height: 100%;
+            align-items: center; justify-content: space-around;
+            font-size: 34px; border-left: 2px solid white;
+        }
+        .stats span { width: 33%; text-align: center; }
+
+        .btn-retour {
+            align-self: flex-start;
+            margin: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            border: 1px solid white;
+            padding: 5px 15px;
+        }
+    </style>
+</head>
+<body>
+
+<a href="index.html" class="btn-retour">⬅ MENU</a>
+
+<div class="header-pays">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Greece.svg/320px-Flag_of_Greece.svg.png">
+    <h1>GRÈCE</h1>
+</div>
+
+<div id="classement" class="classement-container"></div>
+
+<script>
+// --- DONNÉES GRÈCE (Tes noms et logos) ---
+const equipes = [
+    { name: "AEK Athènes", played: 18, gd: 20, points: 44, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/0/04/AEK_Athens_FC_logo.svg/800px-AEK_Athens_FC_logo.svg.png" },
+    { name: "OLYMPIACOS", played: 17, gd: 26, points: 42, logo: "https://upload.wikimedia.org/wikipedia/it/5/56/Olympiakos_600.png" },
+    { name: "PAOK Salonique", played: 17, gd: 25, points: 41, logo: "https://upload.wikimedia.org/wikipedia/en/e/e6/PAOK_FC_EMBLEM.png" },
+    { name: "LEVADIAKOS", played: 18, gd: 23, points: 35, logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/APO_Levadiakos_%28logo%29.svg/800px-APO_Levadiakos_%28logo%29.svg.png" },
+    { name: "PANATHINAIKOS", played: 17, gd: 3, points: 26, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/8/84/Panathinaikos_F.C._logo.svg/800px-Panathinaikos_F.C._logo.svg.png" },
+    { name: "VOLOS", played: 18, gd: -6, points: 25, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/7/70/Volos_F.C._logo.png/800px-Volos_F.C._logo.png" },
+    { name: "ARIS Salonique", played: 18, gd: -4, points: 22, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/e/e4/Aris_Thessaloniki_F.C._logo.svg/800px-Aris_Thessaloniki_F.C._logo.svg.png" },
+    { name: "KIFISIA", played: 17, gd: -2, points: 19, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/d/d9/A.E._Kifisia_new_official_logo.webp/800px-A.E._Kifisia_new_official_logo.webp.png" },
+    { name: "OFI Crète", played: 17, gd: -10, points: 18, logo: "https://upload.wikimedia.org/wikipedia/el/e/e9/OFI_FC_Logo_2020.png" },
+    { name: "ATROMITOS", played: 18, gd: -5, points: 17, logo: "https://upload.wikimedia.org/wikipedia/en/e/e9/Atromitos.png" },
+    { name: "AEL LARISSA", played: 18, gd: -12, points: 16, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/2/25/Athlitiki_Enosi_Larissa_F.C._logo.svg/800px-Athlitiki_Enosi_Larissa_F.C._logo.svg.png" },
+    { name: "PANETOLIKOS", played: 18, gd: -16, points: 15, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Panetolikos_new_emblem.png/800px-Panetolikos_new_emblem.png" },
+    { name: "ASTERAS TRIPOLIS", played: 17, gd: -9, points: 13, logo: "https://upload.wikimedia.org/wikipedia/fr/thumb/2/26/Logo_Asteras_Tripolis_2024.svg/1280px-Logo_Asteras_Tripolis_2024.svg.png?20250825033652" },
+    { name: "PANSERRAIKOS", played: 18, gd: -33, points: 8, logo: "https://upload.wikimedia.org/wikipedia/en/b/b0/Panseraikos_new_emblem.png" }
+];
+
+function renderClassement() {
+    // Tri manuel par points
+    equipes.sort((a, b) => {
+        if (b.points !== a.points) {
+            return b.points - a.points; 
+        } else {
+            return 0; // Si égalité, on garde ton ordre manuel
+        }
+    });
+
+    const container = document.getElementById('classement');
+    container.innerHTML = ''; 
+
+    equipes.forEach((team, index) => {
+        const rang = index + 1;
+        let specialClass = '';
+
+        // --- RÈGLES COULEURS GRÈCE ---
+        if (rang <= 4) {
+            specialClass = 'top-tier'; // 1-4 : Turquoise
+        } else if (rang <= 8) {
+            specialClass = 'mid-tier'; // 5-8 : Vert Foncé
+        } else {
+            specialClass = 'bottom-tier'; // 9-14 : Rouge
+        }
+
+        container.innerHTML += `
+            <div class="ligne ${specialClass}">
+                <div class="numero">${rang}</div>
+                <div class="logo-box"><img src="${team.logo}"></div>
+                <div class="nom-club">${team.name}</div>
+                <div class="stats">
+                    <span>${team.played}</span>
+                    <span>${team.gd > 0 ? '+' + team.gd : team.gd}</span>
+                    <span>${team.points}</span>
+                </div>
+            </div>
+        `;
+    });
+}
+
+renderClassement();
+</script>
+</body>
+</html>
