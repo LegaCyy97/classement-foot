@@ -2,8 +2,9 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=800, user-scalable=yes">    
-        <style>
+    <meta name="viewport" content="width=800, user-scalable=yes">
+    <title>SCORES CHYPRE | Saison 25-26</title>
+    <style>
         @font-face {
             font-family: 'VarsityTeam';
             src: url('varsity-team.bold.otf') format('opentype');
@@ -14,38 +15,40 @@
             background-color: #000; 
             font-family: 'VarsityTeam', sans-serif; 
             color: white; 
-            margin: 0; /* On supprime les marges extérieures */
-            padding: 0; /* On supprime les marges intérieures */
-            min-height: 100vh; /* On force le fond noir à aller tout en bas */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center; /* On centre tout parfaitement */
-	    justify-content: flex-start;
+            align-items: center;
+            justify-content: flex-start;
         }
-	
-	/* Style du Titre Pays */
-.header-pays {
-    display: flex;
-    align-items: center;     /* Aligne verticalement */
-    justify-content: center; /* Centre horizontalement */
-    gap: 30px;               /* Espace entre le drapeau et le texte */
-    margin-top: 30px;        /* Espace au-dessus */
-    margin-bottom: 30px;     /* Espace avant le tableau */
-}
 
-.header-pays img {
-    width: 120px;            /* Taille du drapeau */
-    height: auto;
-    }
+        /* Style du Titre Pays */
+        .header-pays {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            width: 800px;
+            max-width: 100%;
+        }
 
-.header-pays h1 {
-    font-size: 90px;         /* Gros titre Varsity */
-    margin: 0;
-    color: white;            /* Blanc (ou #12C4C2 pour le turquoise) */
-    text-shadow: 4px 4px 0 #000; /* Petit effet d'ombre pour le relief */
-}
+        .header-pays img {
+            width: 120px;
+            height: auto;
+        }
+
+        .header-pays h1 {
+            font-size: 90px;
+            margin: 0;
+            color: white;
+            text-shadow: 4px 4px 0 #000;
+        }
         
-        .classement-container { width: 800px; display: flex; flex-direction: column; gap: 0px; margin-bottom: 0;}
+        .classement-container { width: 800px; display: flex; flex-direction: column; gap: 0px; margin-bottom: 50px;}
 
         .ligne {
             display: flex; align-items: center;
@@ -55,8 +58,9 @@
             margin-bottom: -1px;
         }
 
-        .top-tier { background-color: #12C4C2 !important; } 
-        .bottom-tier { background-color: #C11B17 !important; } 
+        /* --- COULEURS CHYPRE --- */
+        .top-tier { background-color: #12C4C2 !important; } /* 1-6 : Turquoise */
+        .bottom-tier { background-color: #C11B17 !important; } /* 7-14 : Rouge */
 
         .numero {
             width: 70px; text-align: center; font-size: 36px;
@@ -92,69 +96,78 @@
             font-size: 34px; border-left: 2px solid white;
         }
         .stats span { width: 33%; text-align: center; }
-	.btn-retour {
+
+        .btn-retour {
             align-self: flex-start;
             margin: 20px;
             color: white;
             text-decoration: none;
             font-size: 20px;
             border: 1px solid white;
-            padding: 5px 15px; }
+            padding: 5px 15px;
+        }
     </style>
 </head>
 <body>
-	<a href="index.html" class="btn-retour">⬅ MENU</a>
-    <div class="header-pays">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Cyprus.svg/320px-Flag_of_Cyprus.svg.png">
-        <h1>CHYPRE</h1>
-    </div> <div id="classement" class="classement-container"></div>
+
+<a href="index.html" class="btn-retour">⬅ MENU</a>
+
+<div class="header-pays">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Cyprus.svg/320px-Flag_of_Cyprus.svg.png">
+    <h1>D1 CHYPRE</h1>
+</div>
+
+<div id="classement" class="classement-container"></div>
 
 <script>
-// MODIFIE LES CHIFFRES ICI - LE TRI SE FAIT TOUT SEUL
-const equipes = [
-    { name: "Omonia Nicosie", played: 19, gd: 34, points: 45, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/3/3d/AC_Omonia_logo.svg/900px-AC_Omonia_logo.svg.png" },
-    { name: "AEK Larnaca", played: 19, gd: 18, points: 40, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f9/AEK_Larnaca_logo.svg/960px-AEK_Larnaca_logo.svg.png" },
-    { name: "Pafos", played: 18, gd: 18, points: 37, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/9b/Pafos_FC_crest.svg/800px-Pafos_FC_crest.svg.png" },
-    { name: "Aris Limassol", played: 19, gd: 21, points: 37, logo: "https://upload.wikimedia.org/wikipedia/commons/b/b5/Arislimassolfc.png" },
-    { name: "Apollon Limassol", played: 19, gd: 8, points: 36, logo: "https://upload.wikimedia.org/wikipedia/en/0/0e/Apollon_Limassol_Logo.png" },
-    { name: "APOEL Nicosie", played: 18, gd: 19, points: 33, logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/APOEL_%28logo%29.svg/960px-APOEL_%28logo%29.svg.png" },
-    { name: "AEL Limassol", played: 19, gd: -3, points: 27, logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/AEL_Limassol_logo.svg/960px-AEL_Limassol_logo.svg.png" },
-    { name: "Olympiakos Nicosie", played: 19, gd: -5, points: 23, logo: "https://upload.wikimedia.org/wikipedia/fr/7/74/Olympiakos_Nicosie.png" },
-    { name: "Omonia Aradippou", played: 19, gd: -10, points: 21, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/e/ed/Omonia_Aradippou.png/800px-Omonia_Aradippou.png" },
-    { name: "Anorthosis Famagouste", played: 19, gd: -14, points: 20, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/5/50/Anorthosis_FC_logo.svg/960px-Anorthosis_FC_logo.svg.png" },
-    { name: "Akritas Chlorakas", played: 19, gd: -18, points: 19, logo: "https://upload.wikimedia.org/wikipedia/en/6/61/Akritas_Chlorakas.png" },
-    { name: "Krasava Ypsonas", played: 19, gd: -11, points: 17, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/c/ca/Logo_of_Krasava_ENY_Ypsonas_FC.png/800px-Logo_of_Krasava_ENY_Ypsonas_FC.png" },
-    { name: "Ethnikos Achna", played: 19, gd: -18, points: 14, logo: "https://upload.wikimedia.org/wikipedia/en/thumb/2/2a/Ethnikos_Achna.svg/960px-Ethnikos_Achna.svg.png" },
-    { name: "Enosis Neon Paralimni", played: 19, gd: -39, points: 1, logo: "https://upload.wikimedia.org/wikipedia/el/thumb/2/2d/%CE%88%CE%BD%CF%89%CF%83%CE%B9%CF%82_%CE%9D%CE%AD%CF%89%CE%BD_%CE%A0%CE%B1%CF%81%CE%B1%CE%BB%CE%B9%CE%BC%CE%BD%CE%AF%CE%BF%CF%85_%28logo%29.svg/960px-%CE%88%CE%BD%CF%89%CF%83%CE%B9%CF%82_%CE%9D%CE%AD%CF%89%CE%BD_%CE%A0%CE%B1%CF%81%CE%B1%CE%BB%CE%B9%CE%BC%CE%BD%CE%AF%CE%BF%CF%85_%28logo%29.svg.png" }
-];
+// --- CONFIGURATION GOOGLE SHEETS ---
+const googleSheetId = "1lyuhhsvXqX2m8GavZdviM01RTR_1jk4jHREHp_ihRs8"; // <--- COLLE TON ID DE FICHIER GOOGLE SHEET ICI
+const ongletNom = "chypre"; // Le nom exact de l'onglet dans ton fichier Excel
 
-function renderClassement() {
-    // NOUVEAU TRI : Par points uniquement.
-    // En cas d'égalité, le script garde l'ordre que TU as écrit dans la liste.
-    equipes.sort((a, b) => {
-        if (b.points !== a.points) {
-            return b.points - a.points; // Trie par points (du plus grand au plus petit)
-        } else {
-            return 0; // Si points égaux, ne change rien (garde ton ordre manuel)
-        }
-    });
+const url = `https://opensheet.elk.sh/${googleSheetId}/${ongletNom}`;
 
+async function chargerClassement() {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur réseau");
+        const data = await response.json();
+
+        // Tri automatique par points
+        data.sort((a, b) => {
+            const pointsA = parseInt(a.points) || 0;
+            const pointsB = parseInt(b.points) || 0;
+            if (pointsB !== pointsA) {
+                return pointsB - pointsA;
+            } else {
+                return 0; // Si égalité, garde l'ordre Excel
+            }
+        });
+
+        renderClassement(data);
+    } catch (error) {
+        console.error("Erreur :", error);
+        document.getElementById('classement').innerHTML = "<div style='text-align:center; margin-top:20px; font-size:24px;'>Chargement... (Vérifie ID Sheet)</div>";
+    }
+}
+
+function renderClassement(equipes) {
     const container = document.getElementById('classement');
     container.innerHTML = ''; 
 
     equipes.forEach((team, index) => {
         const rang = index + 1;
-        // Top 6 en turquoise, les autres en rouge
+        
+        // --- RÈGLE SPÉCIALE CHYPRE (TOP 6) ---
         let specialClass = (rang <= 6) ? 'top-tier' : 'bottom-tier';
 
         container.innerHTML += `
             <div class="ligne ${specialClass}">
                 <div class="numero">${rang}</div>
-                <div class="logo-box"><img src="${team.logo}"></div>
+                <div class="logo-box"><img src="${team.logo}" onerror="this.src='https://via.placeholder.com/50'"></div>
                 <div class="nom-club">${team.name}</div>
                 <div class="stats">
                     <span>${team.played}</span>
-                    <span>${team.gd > 0 ? '+' + team.gd : team.gd}</span>
+                    <span>${parseInt(team.gd) > 0 ? '+' + parseInt(team.gd) : parseInt(team.gd)}</span>
                     <span>${team.points}</span>
                 </div>
             </div>
@@ -162,10 +175,12 @@ function renderClassement() {
     });
 }
 
-renderClassement();
+// Lancement automatique
+chargerClassement();
 </script>
 </body>
 </html>
+
 
 
 
