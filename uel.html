@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=800, user-scalable=yes">
+    <title>CLASSEMENT EUROPA LEAGUE</title>
+    <style>
+        @font-face {
+            font-family: 'VarsityTeam';
+            src: url('varsity-team.bold.otf') format('opentype');
+            font-weight: bold;
+        }
+
+        body { 
+            background-color: #000; 
+            font-family: 'VarsityTeam', sans-serif; 
+            color: white; 
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* HEADER UEL */
+        .header-competition {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            width: 800px;
+            max-width: 100%;
+        }
+
+        .header-competition img {
+            width: 120px; 
+            height: auto;
+            border: 3px solid white;
+        }
+
+        .header-competition h1 {
+            font-size: 60px;
+            margin: 0;
+            color: white;
+            text-shadow: 4px 4px 0 #000;
+            white-space: nowrap;
+        }
+        
+        .classement-container { width: 800px; display: flex; flex-direction: column; gap: 0px; margin-bottom: 50px;}
+
+        .ligne {
+            display: flex; align-items: center;
+            height: 70px; 
+            border: 1px solid white; 
+            margin-bottom: -1px;
+        }
+
+        /* --- COULEURS EUROPA LEAGUE --- */
+        .uel-top { background-color: #C64900 !important; }  /* 1-8 : Orange Foncé (Rouille) */
+        .uel-mid { background-color: #F5821F !important; }  /* 9-24 : Orange Officiel UEL */
+        .uel-bot { background-color: #000000 !important; border-color: #333; }  /* 25-36 : Noir */
+
+        .numero {
+            width: 70px; text-align: center; font-size: 36px;
+            height: 100%; display: flex; 
+            align-items: center; justify-content: center;
+            border-right: 2px solid white;
+        }
+
+        .logo-box {
+            width: 70px; height: 100%;
+            background: #000; 
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border-right: 2px solid white;
+        }
+
+        .logo-box img {
+            width: 150%; 
+            transform: rotate(15deg);
+            object-fit: contain;
+        }
+
+        .nom-club { 
+            flex-grow: 1; padding-left: 8px; 
+            font-size: 34px; 
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .stats {
+            display: flex; width: 220px; 
+            height: 100%;
+            align-items: center; justify-content: space-around;
+            font-size: 34px; border-left: 2px solid white;
+        }
+        .stats span { width: 33%; text-align: center; }
+
+        .btn-retour {
+            align-self: flex-start;
+            margin: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            border: 1px solid white;
+            padding: 5px 15px;
+        }
+    </style>
+</head>
+<body>
+
+<a href="index.html" class="btn-retour">⬅ MENU</a>
+
+<div class="header-competition">
+    <img src="https://play-lh.googleusercontent.com/g1hQlccDMR3V04Ul35aTpl6m9e9o6ueQzSkBhZ-Vaq4lJLSbgaJbHtaSuanXXtTsEPkO">
+    <div>
+        <h1>EUROPA LEAGUE</h1>
+    </div>
+</div>
+
+<div id="classement" class="classement-container"></div>
+
+<script>
+// --- CONFIGURATION ---
+const googleSheetId = "1lyuhhsvXqX2m8GavZdviM01RTR_1jk4jHREHp_ihRs8"; // Ton ID (ne change pas)
+const ongletNom = "uel"; // <--- NOUVEL ONGLET
+
+const url = `https://opensheet.elk.sh/${googleSheetId}/${ongletNom}`;
+
+async function chargerClassement() {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur réseau");
+        const data = await response.json();
+
+        // TRI AUTOMATIQUE (Points > Diff > Buts Pour)
+        data.sort((a, b) => {
+            const ptsA = parseInt(a.points) || 0;
+            const ptsB = parseInt(b.points) || 0;
+            
+            const gdA = parseInt(a.gd) || 0;
+            const gdB = parseInt(b.gd) || 0;
+            
+            // Si tu as la colonne 'bp' (Buts Pour)
+            const bpA = parseInt(a.bp) || 0; 
+            const bpB = parseInt(b.bp) || 0;
+
+            if (ptsB !== ptsA) {
+                return ptsB - ptsA; 
+            } else if (gdB !== gdA) {
+                return gdB - gdA; 
+            } else {
+                return bpB - bpA; 
+            }
+        });
+
+        renderClassement(data);
+    } catch (error) {
+        console.error("Erreur :", error);
+        document.getElementById('classement').innerHTML = "<div style='text-align:center;'>Chargement...</div>";
+    }
+}
+
+function renderClassement(equipes) {
+    const container = document.getElementById('classement');
+    container.innerHTML = ''; 
+
+    equipes.forEach((team, index) => {
+        const rang = index + 1;
+        let specialClass = '';
+
+        // --- RÈGLES COULEURS UEL (Orange) ---
+        if (rang <= 8) {
+            specialClass = 'uel-top';      // 1-8 : Orange Foncé
+        } else if (rang <= 24) {
+            specialClass = 'uel-mid';      // 9-24 : Orange Clair
+        } else {
+            specialClass = 'uel-bot';      // 25-36 : Noir
+        }
+
+        container.innerHTML += `
+            <div class="ligne ${specialClass}">
+                <div class="numero">${rang}</div>
+                <div class="logo-box"><img src="${team.logo}" onerror="this.src='https://via.placeholder.com/50'"></div>
+                <div class="nom-club">${team.name}</div>
+                <div class="stats">
+                    <span>${team.played}</span>
+                    <span>${parseInt(team.gd) > 0 ? '+' + parseInt(team.gd) : parseInt(team.gd)}</span>
+                    <span>${team.points}</span>
+                </div>
+            </div>
+        `;
+    });
+}
+
+chargerClassement();
+</script>
+</body>
+</html>
