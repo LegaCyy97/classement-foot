@@ -178,7 +178,7 @@ function renderClassement(equipes) {
                 <div class="nom-club">${team.name}</div>
                 <div class="stats">
                     <span>${team.played}</span>
-                    <span>${team.gd > 0 ? '+' + team.gd : team.gd}</span>
+                    <span>${parseInt(team.gd) > 0 ? '+' + parseInt(team.gd) : parseInt(team.gd)}</span>
                     <span>${team.points}</span>
                 </div>
             </div>
@@ -191,9 +191,9 @@ chargerClassement();
 </script>
 </body>
 </html>
-
 renderClassement();
 </script>
 </body>
 </html>
+
 
