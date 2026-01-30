@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=800, user-scalable=yes">
+    <title>CLASSEMENT CONFERENCE LEAGUE</title>
+    <style>
+        @font-face {
+            font-family: 'VarsityTeam';
+            src: url('varsity-team.bold.otf') format('opentype');
+            font-weight: bold;
+        }
+
+        body { 
+            background-color: #000; 
+            font-family: 'VarsityTeam', sans-serif; 
+            color: white; 
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* HEADER UECL */
+        .header-competition {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            width: 800px;
+            max-width: 100%;
+        }
+
+        .header-competition img {
+            width: 120px; 
+            height: auto;
+	    border: 3px solid white;
+        }
+
+        .header-competition h1 {
+            font-size: 60px; /* Un peu plus petit car le titre est long */
+            margin: 0;
+            color: white;
+            text-shadow: 4px 4px 0 #000;
+            white-space: nowrap;
+        }
+        
+        .classement-container { width: 800px; display: flex; flex-direction: column; gap: 0px; margin-bottom: 50px;}
+
+        .ligne {
+            display: flex; align-items: center;
+            height: 70px; 
+            border: 1px solid white; 
+            margin-bottom: -1px;
+        }
+
+        /* --- COULEURS UECL (Vert) --- */
+        .uecl-top { background-color: #006400 !important; }  /* 1-8 : Vert Foncé */
+        .uecl-mid { background-color: #32CD32 !important; }  /* 9-24 : Vert Clair (Lime) */
+        .uecl-bot { background-color: #000000 !important; border-color: #333; }  /* 25-36 : Noir */
+
+        .numero {
+            width: 70px; text-align: center; font-size: 36px;
+            height: 100%; display: flex; 
+            align-items: center; justify-content: center;
+            border-right: 2px solid white;
+        }
+
+        .logo-box {
+            width: 70px; height: 100%;
+            background: #000; 
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border-right: 2px solid white;
+        }
+
+        .logo-box img {
+            width: 150%; 
+            transform: rotate(15deg);
+            object-fit: contain;
+        }
+
+        .nom-club { 
+            flex-grow: 1; padding-left: 8px; 
+            font-size: 34px; 
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .stats {
+            display: flex; width: 220px; 
+            height: 100%;
+            align-items: center; justify-content: space-around;
+            font-size: 34px; border-left: 2px solid white;
+        }
+        .stats span { width: 33%; text-align: center; }
+
+        .btn-retour {
+            align-self: flex-start;
+            margin: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            border: 1px solid white;
+            padding: 5px 15px;
+        }
+    </style>
+</head>
+<body>
+
+<a href="index.html" class="btn-retour">⬅ MENU</a>
+
+<div class="header-competition">
+    <img src="https://play-lh.googleusercontent.com/nWrxbKkGog67rL2MBswBdFUdZXYjjsA2y_eZFkD0wufs7_ImP-564xgJudsTffgiH-Lt">
+    <div>
+        <h1>CONFERENCE LEAGUE</h1>
+    </div>
+</div>
+
+<div id="classement" class="classement-container"></div>
+
+<script>
+// --- CONFIGURATION ---
+const googleSheetId = "1lyuhhsvXqX2m8GavZdviM01RTR_1jk4jHREHp_ihRs8"; 
+const ongletNom = "uecl"; // <--- Nom de ton onglet Excel
+
+const url = `https://opensheet.elk.sh/${googleSheetId}/${ongletNom}`;
+
+async function chargerClassement() {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Erreur réseau");
+        const data = await response.json();
+
+        // FONCTION DE NETTOYAGE (Vital pour le tri !)
+        const cleanNumber = (val) => {
+            if (!val) return 0;
+            const cleaned = String(val).replace(/,/g, '.').replace(/[^0-9.-]/g, '');
+            return parseFloat(cleaned) || 0;
+        };
+
+        // TRI AUTOMATIQUE
+        data.sort((a, b) => {
+            const ptsA = cleanNumber(a.points);
+            const ptsB = cleanNumber(b.points);
+            const gdA = cleanNumber(a.gd);
+            const gdB = cleanNumber(b.gd);
+            const bpA = cleanNumber(a.bp); 
+            const bpB = cleanNumber(b.bp);
+
+            if (ptsB !== ptsA) return ptsB - ptsA; 
+            else if (gdB !== gdA) return gdB - gdA; 
+            else return bpB - bpA; 
+        });
+
+        renderClassement(data);
+    } catch (error) {
+        console.error("Erreur :", error);
+        document.getElementById('classement').innerHTML = "<div style='text-align:center;'>Chargement...<br>(Vérifie le nom de l'onglet Excel)</div>";
+    }
+}
+
+function renderClassement(equipes) {
+    const container = document.getElementById('classement');
+    container.innerHTML = ''; 
+    
+    // Fonction de nettoyage pour l'affichage
+    const cleanNumber = (val) => {
+        const cleaned = String(val).replace(/,/g, '.').replace(/[^0-9.-]/g, '');
+        return parseInt(cleaned) || 0;
+    };
+
+    equipes.forEach((team, index) => {
+        const rang = index + 1;
+        let specialClass = '';
+
+        // --- RÈGLES COULEURS UECL ---
+        if (rang <= 8) {
+            specialClass = 'uecl-top';      // 1-8 : Vert Foncé
+        } else if (rang <= 24) {
+            specialClass = 'uecl-mid';      // 9-24 : Vert Clair
+        } else {
+            specialClass = 'uecl-bot';      // 25-36 : Noir
+        }
+
+        container.innerHTML += `
+            <div class="ligne ${specialClass}">
+                <div class="numero">${rang}</div>
+                <div class="logo-box"><img src="${team.logo}" onerror="this.src='https://via.placeholder.com/50'"></div>
+                <div class="nom-club">${team.name}</div>
+                <div class="stats">
+                    <span>${team.played}</span>
+                    <span>${cleanNumber(team.gd) > 0 ? '+' + cleanNumber(team.gd) : cleanNumber(team.gd)}</span>
+                    <span>${team.points}</span>
+                </div>
+            </div>
+        `;
+    });
+}
+
+chargerClassement();
+</script>
+</body>
+</html>
